@@ -1,25 +1,26 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Input C matrix
-C= [1 1 0 0 0 0 0 0 0 0 0;1 0 1 1 0 0 0 0 0 0 0;0 1 1 0 1 0 1 1 0 0 0;0 0 0 1 1 1 0 0 0 0 0;0 0 0 0 0 1 1 0 1 1 0;0 0 0 0 0 0 0 1 1 0 1;0 0 0 0 0 0 0 0 0 1 1];
+C= [1 1 0 0 0 0 0 0 0 0 0 0 0;1 0 1 1 0 0 0 0 0 0 0 0 0;0 1 1 0 1 1 0 1 0 0 0 0 0;0 0 0 1 1 0 1 0 0 0 0 0 0;0 0 0 0 0 1 1 0 1 1 0 0 0; 0 0 0 0 0 0 0 1 1 0 1 1 0;0 0 0 0 0 0 0 0 0 1 1 0 1; 0 0 0 0 0 0 0 0 0 0 0 1 1];
+
 sizes=size(C);
 joints=sizes(1,1);
 members=sizes(1,2);
 
 %Input Sx and Sy matrices
-Sx=zeros(7,3);
+Sx=zeros(8,3);
 Sx(1,1)=1;
 
-Sy=zeros(7,3);
+Sy=zeros(8,3);
 Sy(1,2)=1;
-Sy(7,3)=1;
+Sy(8,3)=1;
 
 %Input X and Y vectors
-X=[0;6.25;12.5;14;21.75;21.75;31];
-Y=[0;7;0;7;7;0;0];
+X=[0;6.25;12.5;12.5;19.5;19.5;25.25;31];
+Y=[0;6;0;12;12;0;6;0];
 
 %Input L vector
-L=zeros(2*joints,1);
-L(10)=32;
+L=zeros(16,1);
+L(11)=32;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -32,7 +33,7 @@ A(joints+1:joints*2,1:members)=C;
 
 
 %Calculate total distance
-distvec=zeros(members,1);
+distvec=zeros(13,1);
 for x = 1:2:members*2
     xdist=(X(a(x+1))-X(a(x)));
     xdistsq=xdist^2;
@@ -68,8 +69,8 @@ for x = 1:2:members*2
     ydist=(Y(a(x+1))-Y(a(x)));
     ydistsq=ydist^2;
     dist=sqrt(xdistsq+ydistsq);
-    A(a(x)+joints,b(x))=(Y(a(x+1))-Y(a(x)))/dist;
-    A(a(x+1)+joints,b(x+1))=(Y(a(x))-Y(a(x+1)))/dist;
+    A(a(x)+8,b(x))=(Y(a(x+1))-Y(a(x)))/dist;
+    A(a(x+1)+8,b(x+1))=(Y(a(x))-Y(a(x+1)))/dist;
 end
 
 A(1:joints,members+1:members+3)=Sx;
@@ -100,4 +101,4 @@ fprintf('Sy1: %.2f\n',T(members+2));
 fprintf('Sy2: %.2f\n',T(members+3));
 
 fprintf('Cost of truss: $%.2f\n',cost)
-fprintf('Theoretical max load/cost ratio in oz/$: 0.193\n')
+fprintf('Theoretical max load/cost ratio in oz/$: 0.241\n')
