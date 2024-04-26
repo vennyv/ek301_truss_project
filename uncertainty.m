@@ -1,15 +1,15 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Input C matrix
-connectivity_matrix = [1 1 0 0 0 0 0 0 0 0 0 0 0;
-                       1 0 1 1 0 0 0 0 0 0 0 0 0;
-                       0 1 1 0 1 1 0 1 0 0 0 0 0;
-                       0 0 0 1 1 0 1 0 0 0 0 0 0;
-                       0 0 0 0 0 1 1 0 1 1 0 0 0;
-                       0 0 0 0 0 0 0 1 1 0 1 1 0;
-                       0 0 0 0 0 0 0 0 0 1 1 0 1;
-                       0 0 0 0 0 0 0 0 0 0 0 1 1];
+C = [1 1 0 0 0 0 0 0 0 0 0 0 0;
+     1 0 1 1 0 0 0 0 0 0 0 0 0;
+     0 1 1 0 1 1 0 1 0 0 0 0 0;
+     0 0 0 1 1 0 1 0 0 0 0 0 0;
+     0 0 0 0 0 1 1 0 1 1 0 0 0;
+     0 0 0 0 0 0 0 1 1 0 1 1 0;
+     0 0 0 0 0 0 0 0 0 1 1 0 1;
+     0 0 0 0 0 0 0 0 0 0 0 1 1];
 
-sizes = size(connectivity_matrix);
+sizes = size(C);
 joints = sizes(1,1);
 members = sizes(1,2);
 
@@ -33,15 +33,15 @@ L(11) = 32;
 
 % Setting up A matrix
 A = zeros(joints*2, members+3);
-A(1:joints, 1:members) = connectivity_matrix;
-A(joints+1:end, 1:members) = connectivity_matrix;
+A(1:joints, 1:members) = C;
+A(joints+1:end, 1:members) = C;
 
-[a, b] = find(connectivity_matrix == 1);
+[a, b] = find(C == 1);
 
 % Calculate total distance and lengths of members
 distvec = zeros(members, 1);
 for x = 1:members
-    member_indices = find(connectivity_matrix(:,x));
+    member_indices = find(C(:,x));
     xdist = X(member_indices(2)) - X(member_indices(1));
     ydist = Y(member_indices(2)) - Y(member_indices(1));
     distvec(x) = sqrt(xdist^2 + ydist^2);
@@ -54,7 +54,7 @@ cost = 10 * joints + tdist;
 
 % Calculating A matrix
 for x = 1:members
-    member_indices = find(connectivity_matrix(:,x));
+    member_indices = find(C(:,x));
     xdist = X(member_indices(2)) - X(member_indices(1));
     ydist = Y(member_indices(2)) - Y(member_indices(1));
     dist = sqrt(xdist^2 + ydist^2);
@@ -73,16 +73,16 @@ T = A \ L;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Print Results
-fprintf('EK301, Section A2, Group 20: Darren S., Venessa M., Vikram B. 4/2/2024.\n');
+fprintf('EK301, Section A2, Group 20: Darren S., Venessa M., Vikram B. 4/26/2024.\n');
 fprintf('Load: %.1f oz\n', sum(L));
 fprintf('Member forces in oz:\n');
 for z = 1:members
     if T(z) > 0
-        fprintf('m%d: %.3f (T)\n', z, T(z));
+        fprintf('m%d: %.3f (T)\n', z, abs(T(z)));
     elseif T(z) < 0
-        fprintf('m%d: %.3f (C)\n', z, -T(z));
+        fprintf('m%d: %.3f (C)\n', z, abs(T(z)));
     else
-        fprintf('m%d: %.3f\n', z, T(z));
+        fprintf('m%d: %.3f\n', z, abs(T(z)));
     end
 end
 
@@ -91,7 +91,7 @@ fprintf('Sx1: %.2f\n', T(members+1));
 fprintf('Sy1: %.2f\n', T(members+2));
 fprintf('Sy2: %.2f\n', T(members+3));
 
-fprintf('Cost of truss: $%.2f\n',cost)
+fprintf('Cost of truss: $%.2f\n', cost)
 fprintf('Theoretical max load/cost ratio in oz/$: 0.241\n')
 
 % Constants for the fit formula
